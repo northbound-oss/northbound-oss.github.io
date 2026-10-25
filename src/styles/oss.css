@@ -1,0 +1,213 @@
+/* Ported 1:1 from the "Northbound Site" design canvas (OSS.dc.html), plus the hand-over to and from northbound.sh at the end. */
+body{margin:0;background:#000}
+a{color:#f5f5f5}a:hover{color:#ffffff}
+*{box-sizing:border-box}
+::selection{background:#E11D48;background:var(--accent,#E11D48);color:#ffffff}
+button{font:inherit;color:inherit}
+.root{height:100vh;height:100dvh}
+@media (min-width:1024px){.root{min-height:560px}}
+
+@keyframes turnIn{from{opacity:0;transform:perspective(1400px) rotateY(-72deg) translateX(-24px)}to{opacity:1;transform:none}}
+@keyframes turnOut{from{opacity:1;transform:none}to{opacity:0;transform:perspective(1400px) rotateY(78deg) translateX(30px)}}
+@keyframes slideIn{from{opacity:0;transform:translateX(var(--dx,64px))}to{opacity:1;transform:none}}
+@keyframes slideOut{to{opacity:0;transform:translateX(-56px)}}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:none}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes drift{from{transform:translate(0,-50%)}to{transform:translate(-42%,-50%)}}
+@keyframes panoIn{from{opacity:0;transform:translateX(34vw)}to{opacity:1;transform:none}}
+/* WP-style progress dot, one continuous curve with no speed jumps:
+   left(u) = 50% + 52%·u⁵ + 96px·u, u = −1…1 over the first 2.1s of a 3s cycle.
+   The px term gives every track the same slow crawl (and even dot spacing) in the middle,
+   the u⁵ term the rush in and out at the edges; the rest of the cycle is a pause. */
+@keyframes metroDot{
+  0%{opacity:1}
+  0%{left:calc(-2% - 96px)}
+  0.075%{left:calc(-1.446% - 95.79px)}
+  0.299%{left:calc(0.187% - 95.18px)}
+  0.673%{left:calc(2.807% - 94.16px)}
+  1.193%{left:calc(6.276% - 92.73px)}
+  1.857%{left:calc(10.409% - 90.91px)}
+  2.664%{left:calc(14.999% - 88.69px)}
+  3.609%{left:calc(19.824% - 86.1px)}
+  4.689%{left:calc(24.669% - 83.14px)}
+  5.899%{left:calc(29.335% - 79.82px)}
+  7.233%{left:calc(33.657% - 76.16px)}
+  8.686%{left:calc(37.508% - 72.18px)}
+  10.251%{left:calc(40.808% - 67.88px)}
+  11.923%{left:calc(43.52% - 63.3px)}
+  13.693%{left:calc(45.653% - 58.44px)}
+  15.555%{left:calc(47.248% - 53.33px)}
+  17.5%{left:calc(48.375% - 48px)}
+  19.52%{left:calc(49.12% - 42.46px)}
+  21.606%{left:calc(49.573% - 36.74px)}
+  23.75%{left:calc(49.822% - 30.86px)}
+  25.941%{left:calc(49.94% - 24.85px)}
+  28.172%{left:calc(49.985% - 18.73px)}
+  30.432%{left:calc(49.998% - 12.53px)}
+  32.711%{left:calc(50% - 6.28px)}
+  35%{left:calc(50% + 0px)}
+  37.289%{left:calc(50% + 6.28px)}
+  39.568%{left:calc(50.002% + 12.53px)}
+  41.828%{left:calc(50.015% + 18.73px)}
+  44.059%{left:calc(50.06% + 24.85px)}
+  46.25%{left:calc(50.178% + 30.86px)}
+  48.394%{left:calc(50.427% + 36.74px)}
+  50.48%{left:calc(50.88% + 42.46px)}
+  52.5%{left:calc(51.625% + 48px)}
+  54.445%{left:calc(52.752% + 53.33px)}
+  56.307%{left:calc(54.347% + 58.44px)}
+  58.077%{left:calc(56.48% + 63.3px)}
+  59.749%{left:calc(59.192% + 67.88px)}
+  61.314%{left:calc(62.492% + 72.18px)}
+  62.767%{left:calc(66.343% + 76.16px)}
+  64.101%{left:calc(70.665% + 79.82px)}
+  65.311%{left:calc(75.331% + 83.14px)}
+  66.391%{left:calc(80.176% + 86.1px)}
+  67.336%{left:calc(85.001% + 88.69px)}
+  68.143%{left:calc(89.591% + 90.91px)}
+  68.807%{left:calc(93.724% + 92.73px)}
+  69.327%{left:calc(97.193% + 94.16px)}
+  69.701%{left:calc(99.813% + 95.18px)}
+  69.925%{left:calc(101.446% + 95.79px)}
+  70%{left:calc(102% + 96px)}
+  70%{opacity:1}
+  70.01%,100%{opacity:0;left:calc(102% + 96px)}}
+@keyframes sh1{from{opacity:0;transform:translate(-44px,44px)}to{opacity:1;transform:none}}
+@keyframes sh2{from{opacity:0;transform:translate(44px,-44px)}to{opacity:1;transform:none}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fadeInA{from{opacity:0}to{opacity:1}}
+@keyframes fadeOutA{to{opacity:0}}
+@keyframes bandIn{from{opacity:0;transform:scaleY(.2)}to{opacity:1;transform:none}}
+@keyframes bandOut{to{opacity:0;transform:scaleY(.2)}}
+
+.si{animation:slideIn .9s cubic-bezier(.1,.9,.2,1) both;animation-delay:calc(var(--i) * 70ms + 80ms)}
+.so{animation:slideOut .3s cubic-bezier(.7,0,.9,.4) both;animation-delay:calc(var(--i) * 25ms)}
+
+/* chrome */
+.top{position:absolute;top:0;left:0;right:0;height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(24px,6vw,104px);z-index:20;animation:fadeDown .8s cubic-bezier(.1,.9,.2,1) both}
+.brand{display:flex;align-items:center;gap:12px;background:none;border:0;cursor:pointer;padding:0;min-height:44px}
+.brand svg path{transform-box:fill-box;transition:transform .45s cubic-bezier(.1,.9,.2,1)}
+.top .l1{animation:sh1 .9s cubic-bezier(.1,.9,.2,1) backwards .05s}
+.top .l2{animation:sh2 .9s cubic-bezier(.1,.9,.2,1) backwards .15s}
+.brand:hover .l1{transform:translate(-3px,3px)}
+.brand:hover .l2{transform:translate(3px,-3px)}
+.brand:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+.wm{font-weight:600;font-size:18px;letter-spacing:-.02em}
+.wm{white-space:nowrap}
+.wmo{font-weight:200;color:#8c8c8c;margin-left:.3em}
+.toco{display:inline-flex;align-items:center;gap:10px;min-height:44px;font:400 11px/1 'IBM Plex Mono',monospace;letter-spacing:.1em;color:#8c8c8c;text-decoration:none;transition:color .2s}
+.toco span{transition:transform .3s cubic-bezier(.1,.9,.2,1)}
+.toco:hover{color:#f5f5f5}
+.toco:hover span{transform:translateX(-4px)}
+.toco:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+
+.dl{position:absolute;overflow:hidden;pointer-events:none}
+.dl i{position:absolute;top:1px;left:-2%;width:4px;height:4px;border-radius:50%;background:#f5f5f5;opacity:0;animation:metroDot 3s linear infinite;animation-delay:calc(var(--i) * 130ms)}
+.busy{left:0;right:0;top:0;height:6px;z-index:50}
+
+/* panorama */
+.pano-wrap{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.pano-in{position:absolute;left:0;top:50%;animation:panoIn 1.8s cubic-bezier(.1,.9,.2,1) both}
+.pano{font-weight:800;font-size:clamp(220px,38vw,640px);line-height:.8;letter-spacing:-.06em;white-space:nowrap;color:transparent;-webkit-text-stroke:1px #1e1e1e;transform:translateY(-50%);animation:drift 90s linear infinite alternate}
+
+/* home */
+.home{position:absolute;inset:0;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:clamp(32px,5vw,96px);padding:72px clamp(24px,6vw,104px) 72px;--c:clamp(84px,min(14.5vh,10.4vw),158px)}
+.eyebrow{margin:0 0 28px;font:400 11px/1 'IBM Plex Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#8c8c8c}
+.eyebrow::before{content:'';display:inline-block;width:28px;height:1px;background:var(--accent);vertical-align:middle;margin-right:14px}
+.h1{margin:0;font-weight:200;font-size:clamp(34px,min(6.6vw,14.5cqi),112px);line-height:.95;letter-spacing:-.045em}
+.ln{display:block}
+.lead{margin:32px 0 0;max-width:38ch;font-weight:300;font-size:clamp(15px,1.25vw,18px);line-height:1.55;color:#9a9a9a}
+.note{display:flex;gap:12px;margin:22px 0 0;max-width:46ch;font:400 11px/1.6 'IBM Plex Mono',monospace;letter-spacing:.05em;color:#8c8c8c}
+.note::before{content:'';flex:none;width:9px;height:9px;margin-top:4px;box-shadow:inset 0 0 0 1px #6f6f6f}
+.tiles{display:grid;grid-template-columns:repeat(4,var(--c));grid-auto-rows:var(--c);gap:8px}
+
+.tile{position:relative;display:block;border:0;padding:0;margin:0;background:none;text-align:left;text-decoration:none;cursor:pointer;transform-origin:0 50%;-webkit-tap-highlight-color:transparent;outline:none;color:#f5f5f5;touch-action:manipulation}
+.tile.static{cursor:default}
+.tt{animation:turnIn .75s cubic-bezier(.1,.9,.2,1) both;animation-delay:calc(var(--i) * 60ms + 80ms)}
+.tt-out{animation:turnOut .32s cubic-bezier(.7,0,.9,.4) both;animation-delay:calc(var(--i) * 32ms)}
+.ti{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between;padding:clamp(8px,calc(var(--c) * 0.1),14px);overflow:hidden;background:#141414;transition:transform .18s ease-out,background .25s,box-shadow .25s}
+.tile:hover .ti{background:#1c1c1c;box-shadow:inset 0 0 0 2px #2e2e2e}
+.tile.static:hover .ti{background:#141414;box-shadow:none}
+.tile:focus-visible .ti{box-shadow:inset 0 0 0 2px var(--accent)}
+.tile.dash .ti{background:transparent;border:1px dashed #333333}
+.tl{display:block;font:400 10.5px/1.2 'IBM Plex Mono',monospace;letter-spacing:.08em;color:#8c8c8c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.lbl{display:block;font-size:13px;line-height:1.2;color:#eaeaea;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.tc{position:absolute;top:clamp(8px,calc(var(--c) * 0.1),14px);right:clamp(8px,calc(var(--c) * 0.1),14px);font:400 11px/1 'IBM Plex Mono',monospace;color:#8c8c8c;transition:transform .3s cubic-bezier(.1,.9,.2,1),color .2s}
+.tile:hover .tc{color:#f5f5f5;transform:translate(2px,-2px)}
+.pname{display:block;font-weight:600;font-size:calc(var(--c) * 0.33);line-height:.9;letter-spacing:-.05em;white-space:nowrap}
+.pdesc{display:block;margin-top:6px;max-width:22ch;font-size:13px;line-height:1.35;color:#9a9a9a}
+.spin{animation:spin 14s linear infinite;transform-origin:50% 50%;transform-box:fill-box}
+
+/* hand-off to a project's own site */
+.hand{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:96px 24px;text-align:center}
+.hurl{font-weight:200;font-size:clamp(28px,4.4vw,64px);line-height:1;letter-spacing:-.04em}
+.hurl b{font-weight:600}
+.hp{margin:0;max-width:44ch;font-size:15px;line-height:1.55;color:#9a9a9a}
+.sdots{position:relative;width:240px;height:6px}
+
+/* app bar */
+.barrow{position:absolute;left:0;right:0;bottom:0;z-index:30;display:flex;align-items:center;justify-content:space-between;gap:16px;height:52px;padding:0 clamp(24px,6vw,104px);animation:fadeUp .8s cubic-bezier(.1,.9,.2,1) both .4s}
+.tiny{font:400 11px/1 'IBM Plex Mono',monospace;letter-spacing:.08em;color:#8c8c8c}
+
+/* dialog (Metro message band) */
+.dlg{position:absolute;inset:0;z-index:80;display:flex;align-items:center}
+.dlg-scrim{position:absolute;inset:0;background:rgba(0,0,0,.72);animation:fadeInA .25s ease both}
+.dlg-band{position:relative;width:100%;max-height:100%;overflow-y:auto;background:#141414;box-shadow:0 1px 0 #262626,0 -1px 0 #262626;animation:bandIn .38s cubic-bezier(.1,.9,.2,1) both;outline:none}
+.dlg.closing .dlg-scrim{animation:fadeOutA .22s ease both}
+.dlg.closing .dlg-band{animation:bandOut .22s cubic-bezier(.7,0,.9,.4) both}
+.dlg-in{max-width:680px;margin:0 auto;padding:clamp(24px,5vh,44px) 24px}
+.dlg-t{margin:0;font-weight:200;font-size:clamp(28px,3.4vw,44px);line-height:1.05;letter-spacing:-.03em}
+.dlg-p{margin:14px 0 0;max-width:52ch;font-size:15px;line-height:1.55;color:#bdbdbd}
+.hf{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px 28px;margin:24px 0 0}
+.hf dt{font:400 11px/1.7 'IBM Plex Mono',monospace;letter-spacing:.08em;color:#8c8c8c}
+.hf dd{margin:0;font-size:14px;line-height:1.5;color:#d6d6d6}
+.dlg-btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
+.dbtn{display:inline-flex;align-items:center;justify-content:center;height:44px;padding:0 20px;border:2px solid #f5f5f5;background:transparent;color:#f5f5f5;font-size:14px;text-decoration:none;cursor:pointer;transition:background .15s,color .15s,transform .1s}
+.dbtn:hover{background:#262626;color:#fff}
+.dbtn.pri{background:#f5f5f5;color:#000}
+.dbtn.pri:hover{background:#fff;color:#000}
+.dbtn:active{transform:scale(.97)}
+.dbtn:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+
+/* tablet */
+@media (max-width: 1023px){
+  .home{grid-template-columns:minmax(0,1fr);align-content:start;align-content:safe center;gap:clamp(28px,5vh,56px);overflow-y:auto;padding:96px 48px 96px;--c:min(calc((100vw - 96px - 24px) / 4), 200px)}
+  .h1{font-size:clamp(34px,min(9vw,14.5cqi),104px)}
+  .top,.barrow{padding:0 48px}
+}
+/* phone */
+@media (max-width: 599px){
+  .home{align-content:start;gap:28px;padding:84px 20px 104px;--c:calc((100vw - 40px - 18px) / 4)}
+  .tiles{gap:6px}
+  .eyebrow{margin-bottom:18px}
+  .h1{font-size:clamp(34px,11.5vw,56px)}
+  .lead{margin-top:16px;font-size:15px}
+  .top{height:60px;padding:0 20px}
+  .toco b{display:none}
+  .barrow{padding:0 20px;background:#0b0b0b;box-shadow:0 -1px 0 #1c1c1c}
+  .barrow .opt{display:none}
+  .pdesc{font-size:11.5px}
+  .hf{grid-template-columns:minmax(0,1fr);gap:4px}
+  .hf dd{margin-bottom:10px}
+  .dbtn{flex:1 1 auto}
+}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
+}
+
+/* ---- hand-over between northbound.sh and oss.northbound.sh ---- */
+/* leaving: the page fades to black, then the link is followed (the same rule lives in NB_Website main.css) */
+@keyframes veilIn{from{opacity:0}to{opacity:1}}
+.veil{position:fixed;inset:0;z-index:200;background:#000;pointer-events:none;animation:veilIn .42s cubic-bezier(.4,0,.6,1) both .12s}
+
+/* arriving from northbound.sh: black with the oss mark, then the page plays its entrance under the fading mark */
+@keyframes arriveOut{to{opacity:0;visibility:hidden}}
+@keyframes awmIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.arrive{display:none}
+html.nb-arrive .arrive{position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;background:#000;color:#f5f5f5;font-family:'Sora',system-ui,sans-serif;pointer-events:none}
+html.nb-arrive:not(.nb-arrived) .root{display:none}
+html.nb-arrived .arrive{animation:arriveOut .55s cubic-bezier(.4,0,.6,1) both}
+.arrive path{transform-box:fill-box}
+.arrive .sh1{animation:sh1 .9s cubic-bezier(.1,.9,.2,1) both}
+.arrive .sh2{animation:sh2 .9s cubic-bezier(.1,.9,.2,1) both .1s}
+.awm{font-weight:600;font-size:22px;letter-spacing:-.02em;white-space:nowrap;animation:awmIn .7s cubic-bezier(.1,.9,.2,1) both .25s}
