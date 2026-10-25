@@ -33,3 +33,6 @@ export const Dots = ({ cls }) => (
 
 // northbound.sh, the company site (in dev: its dev server)
 export const NB_URL = import.meta.env.DEV ? 'http://localhost:4321/' : 'https://northbound.sh/';
+
+// the project sites, served under this site at /<repository>/ (in dev: a local server for them)
+export const PROJECTS_URL = import.meta.env.DEV ? 'http://localhost:4340/' : '/';

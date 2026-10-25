@@ -2,12 +2,11 @@
 // is the canvas's DCLogic class almost verbatim; the template is the same markup
 // as JSX. Copy in EN and RU (i18n.js); `/` follows the system language (Base.astro).
 // The canvas's hand-off screen is a mockup: here the NativeNCA tile opens the
-// project directly (its GitHub page until oss.northbound.sh/nca exists).
+// project's site directly, through the same black hand-over as northbound.sh;
+// the project site plays the oss intro (public/intro.js) when opened from here.
 import React from 'react';
-import { sx, LOGO_L, LOGO_R, Dots, NB_URL } from './shared.jsx';
+import { sx, LOGO_L, LOGO_R, Dots, NB_URL, PROJECTS_URL } from './shared.jsx';
 import { dict } from '../i18n.js';
-
-const NCA_URL = 'https://github.com/DonnerTechDev/NativeNCA';
 
 export default class OSS extends React.Component {
   constructor(props) {
@@ -36,7 +35,8 @@ export default class OSS extends React.Component {
         try { (b || el).focus({ preventScroll: true }); } catch (err) {}
       });
     };
-    // leaving for northbound.sh: the tiles turn out and the page fades to black, then the link is followed
+    // leaving for northbound.sh or a project's site: the tiles turn out and the page fades to black,
+    // then the link is followed
     this.goLink = (e) => {
       if (this.go) { this.go = false; return; }
       const a = e.currentTarget;
@@ -81,6 +81,8 @@ export default class OSS extends React.Component {
     });
     return {
       nb: NB_URL + (s.lang === 'ru' ? 'ru/' : ''),
+      // NativeNCA's site: Russian at its root, English under en/
+      nca: PROJECTS_URL + 'NativeNCA/' + (s.lang === 'ru' ? '' : 'en/'),
       accent: this.props.accent ?? '#E11D48',
       busy: s.busy,
       veil: s.veil,
@@ -119,7 +121,7 @@ export default class OSS extends React.Component {
           <nav className="tiles" aria-label={t.navLabel} style={sx('position: relative')}>
 
             {/* NativeNCA → its own site */}
-            <a className={'tile ' + v.tileCls} data-id="nca" href={NCA_URL} target="_blank" rel="noopener" style={sx('--i:0; grid-column: 1 / span 2; grid-row: 1 / span 2')} {...tilePress} aria-label={t.ncaAria}>
+            <a className={'tile ' + v.tileCls} data-id="nca" href={v.nca} onClick={this.goLink} style={sx('--i:0; grid-column: 1 / span 2; grid-row: 1 / span 2')} {...tilePress} aria-label={t.ncaAria}>
               <span className="ti" style={{ transform: v.tf.nca }}>
                 <span style={sx('display: block')}>
                   <span className="tl">01 · windows</span>
