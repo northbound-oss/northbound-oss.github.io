@@ -1,8 +1,9 @@
 ---
 import Base from '../layouts/Base.astro';
 import OSS from '../components/OSS.jsx';
+import { dict } from '../i18n.js';
 import '../styles/oss.css';
 ---
-<Base title="northbound oss" description="Software that northbound developers build on their own time and give away. Free, public, and theirs.">
-  <OSS client:load />
+<Base lang="auto" title={dict.en.title} description={dict.en.description}>
+  <OSS client:load lang="auto" />
 </Base>

@@ -211,3 +211,6 @@ html.nb-arrived .arrive{animation:arriveOut .55s cubic-bezier(.4,0,.6,1) both}
 .arrive .sh1{animation:sh1 .9s cubic-bezier(.1,.9,.2,1) both}
 .arrive .sh2{animation:sh2 .9s cubic-bezier(.1,.9,.2,1) both .1s}
 .awm{font-weight:600;font-size:22px;letter-spacing:-.02em;white-space:nowrap;animation:awmIn .7s cubic-bezier(.1,.9,.2,1) both .25s}
+
+/* `/` in Russian: rendered in English, hidden until OSS.jsx has switched it (see Base.astro) */
+html.nb-wait .root{display:none}
