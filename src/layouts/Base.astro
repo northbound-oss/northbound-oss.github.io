@@ -52,9 +52,13 @@ var d = document.documentElement, lang = d.getAttribute('data-lang');
 if (lang === 'auto') {
   lang = 'en';
   try {
-    var l = ((navigator.languages && navigator.languages[0]) || navigator.language || '').toLowerCase();
     var cis = ['ru', 'be', 'kk', 'ky', 'tg', 'uz', 'hy', 'az', 'tk', 'mo', 'tt', 'ba', 'cv', 'sah', 'ce', 'os'];
-    if (cis.indexOf(l.split(/[-_]/)[0]) >= 0 || /^ro[-_]md/.test(l)) lang = 'ru';
+    var isCis = function (l) { l = String(l || '').toLowerCase(); return cis.indexOf(l.split(/[-_]/)[0]) >= 0 || /^ro[-_]md/.test(l); };
+    var list = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language];
+    // Russian if the first preferred language is a CIS one, if the browser itself runs in one
+    // (a Russian system often still lists English first), or if Russian is anywhere in the list
+    if (isCis(list[0]) || isCis(navigator.language) || isCis(Intl.DateTimeFormat().resolvedOptions().locale) ||
+        Array.prototype.some.call(list, function (l) { return /^ru(?:[-_]|$)/i.test(l); })) lang = 'ru';
   } catch (e) {}
   if (lang === 'ru') {
     d.classList.add('nb-wait');
