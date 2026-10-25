@@ -1,2 +1,4 @@
 User-agent: *
 Allow: /
+
+Sitemap: https://oss.northbound.sh/NativeNCA/sitemap.xml
