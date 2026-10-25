@@ -1,12 +1,12 @@
 ---
 // Fonts are self-hosted and preloaded, as on northbound.sh. They sit in public/fonts at fixed
 // URLs that public/intro.js (the project sites' intro) uses too, so it finds them in the cache.
-// The language works as on northbound.sh: `/` follows the system, `/ru/` is always Russian.
+// The language works as on northbound.sh: `/` follows the system, `/ru/` is always Russian, `/en/` always English.
 import { NB_URL, LOGO_L, LOGO_R } from '../components/shared.jsx';
 
 interface Props {
-  /** 'auto' = the language follows the system; 'ru' = the /ru URL */
-  lang: 'auto' | 'ru';
+  /** 'auto' = the language follows the system; 'ru' / 'en' = the /ru or /en URL */
+  lang: 'auto' | 'ru' | 'en';
   title: string;
   description: string;
 }
@@ -14,6 +14,7 @@ interface Props {
 const { lang, title, description } = Astro.props;
 const site = Astro.site ?? new URL('https://oss.northbound.sh');
 const href = (l: string) => new URL(l === 'ru' ? '/ru/' : '/', site).href;
+// /en/ repeats the English of `/`: its canonical is `/`
 const canonical = href(lang);
 
 const F = '/fonts/';
@@ -82,7 +83,7 @@ d.lang = lang;
 try {
   var still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var r = document.referrer, own = location.origin + '/';
-  var fromProject = r.indexOf(own) === 0 && !/^(ru\/)?([?#].*)?$/.test(r.slice(own.length));
+  var fromProject = r.indexOf(own) === 0 && !/^((ru|en)\/)?([?#].*)?$/.test(r.slice(own.length));
   if (!still && (r.indexOf(nb) === 0 || fromProject)) {
     d.classList.add('nb-arrive');
     setTimeout(function () { d.classList.add('nb-arrived'); }, 950);

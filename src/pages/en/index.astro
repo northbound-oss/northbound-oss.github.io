@@ -1,0 +1,9 @@
+---
+import Base from '../../layouts/Base.astro';
+import OSS from '../../components/OSS.jsx';
+import { dict } from '../../i18n.js';
+import '../../styles/oss.css';
+---
+<Base lang="en" title={dict.en.title} description={dict.en.description}>
+  <OSS client:load lang="en" />
+</Base>

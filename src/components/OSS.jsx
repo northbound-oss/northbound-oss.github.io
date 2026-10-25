@@ -80,7 +80,7 @@ export default class OSS extends React.Component {
         : 'none';
     });
     return {
-      nb: NB_URL + (s.lang === 'ru' ? 'ru/' : ''),
+      nb: NB_URL + (s.lang === 'ru' ? 'ru/' : this.props.lang === 'en' ? 'en/' : ''),
       // NativeNCA's site: Russian at its root, English under en/
       nca: PROJECTS_URL + 'NativeNCA/' + (s.lang === 'ru' ? '' : 'en/'),
       accent: this.props.accent ?? '#E11D48',
@@ -163,7 +163,7 @@ export default class OSS extends React.Component {
 
         {/* ============ CHROME ============ */}
         <header className="top">
-          <a className="brand" href={t.lang === 'ru' ? '/ru/' : '/'} aria-label={t.brandAria} style={sx('color: #f5f5f5; text-decoration: none')}>
+          <a className="brand" href={t.lang === 'ru' ? '/ru/' : this.props.lang === 'en' ? '/en/' : '/'} aria-label={t.brandAria} style={sx('color: #f5f5f5; text-decoration: none')}>
             <svg viewBox="0 0 256 256" width="30" height="30" aria-hidden="true">
               <path className="l1" d={LOGO_L} fill={v.accent}></path>
               <path className="l2" d={LOGO_R} fill="#F8FAFC"></path>
