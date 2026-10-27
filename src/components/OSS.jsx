@@ -109,7 +109,7 @@ export default class OSS extends React.Component {
 
           <section aria-label={t.introLabel} style={sx('position: relative; min-width: 0; container-type: inline-size')}>
             <p className={'eyebrow ' + v.lineCls} style={sx('--i:0')}>{t.eyebrow}</p>
-            <h1 className="h1">
+            <h1 className={'h1' + (t.lang === 'ru' ? ' ru' : '')}>
               <span className={'ln ' + v.lineCls} style={sx('--i:1; color: #6f6f6f')}>{t.h1[0]}</span>
               <span className={'ln ' + v.lineCls} style={sx('--i:2; color: #6f6f6f')}>{t.h1[1]}</span>
               <span className={'ln ' + v.lineCls} style={sx('--i:3')}>{t.h1[2]}</span>
