@@ -4,8 +4,8 @@ export const dict = {
   en: {
     lang: 'en',
     font: "'Sora', 'Onest', system-ui, sans-serif",
-    title: 'northbound oss',
-    description: 'Software that northbound developers build on their own time and give away. Free, public, and theirs.',
+    title: 'Northbound OSS',
+    description: 'Open-source personal projects by our developers.',
 
     pano: 'open source',
     introLabel: 'Introduction',
@@ -44,8 +44,8 @@ export const dict = {
   ru: {
     lang: 'ru',
     font: "'Sora', 'Onest', system-ui, sans-serif",
-    title: 'northbound oss',
-    description: 'Программы, которые разработчики northbound делают в свободное время и отдают всем. Бесплатно, открыто и от их имени.',
+    title: 'Northbound OSS',
+    description: 'Открытые личные проекты наших разработчиков.',
 
     pano: 'открытый код',
     introLabel: 'Вступление',
